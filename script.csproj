@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EBDF9B6E-C9B1-496A-93EE-B5CC1CEA7727}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ScriptLCD</RootNamespace>
+    <AssemblyName>ScriptLCD</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Sandbox.Game">
+      <HintPath>D:\Steam\steamapps\common\SpaceEngineers\..\SpaceEngineers\Bin64\\Sandbox.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="Sandbox.Common">
+      <HintPath>D:\Steam\steamapps\common\SpaceEngineers\..\SpaceEngineers\Bin64\\Sandbox.Common.dll </HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="VRage">
+      <HintPath>D:\Steam\steamapps\common\SpaceEngineers\..\SpaceEngineers\Bin64\\VRage.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Library">
+      <HintPath>D:\Steam\steamapps\common\SpaceEngineers\..\SpaceEngineers\Bin64\\VRage.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Math">
+      <HintPath>D:\Steam\steamapps\common\SpaceEngineers\..\SpaceEngineers\Bin64\\VRage.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Game">
+      <HintPath>D:\Steam\steamapps\common\SpaceEngineers\..\SpaceEngineers\Bin64\\VRage.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="SpaceEngineers.ObjectBuilders">
+      <HintPath>D:\Steam\steamapps\common\SpaceEngineers\..\SpaceEngineers\Bin64\\SpaceEngineers.ObjectBuilders.dll</HintPath>
+    </Reference>
+    <Reference Include="MedievalEngineers.ObjectBuilders">
+      <HintPath>D:\Steam\steamapps\common\SpaceEngineers\..\SpaceEngineers\Bin64\\MedievalEngineers.ObjectBuilders.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="LuaLCD.cs" />
+    <Compile Include="ModDebugger.cs" />
+    <Compile Include="SpaceScript\Closure.cs" />
+    <Compile Include="SpaceScript\CompOp.cs" />
+    <Compile Include="SpaceScript\Constant.cs" />
+    <Compile Include="SpaceScript\If.cs" />
+    <Compile Include="SpaceScript\IndexAccess.cs" />
+    <Compile Include="SpaceScript\Log.cs" />
+    <Compile Include="SpaceScript\MathOp.cs" />
+    <Compile Include="SpaceScript\Mutator.cs" />
+    <Compile Include="SpaceScript\Assign.cs" />
+    <Compile Include="SpaceScript\ExprBlock.cs" />
+    <Compile Include="SpaceScript\Expression.cs" />
+    <Compile Include="SpaceScript\FieldAccess.cs" />
+    <Compile Include="SpaceScript\Grammar.cs" />
+    <Compile Include="SpaceScript\GroupAccess.cs" />
+    <Compile Include="SpaceScript\MethodCall.cs" />
+    <Compile Include="SpaceScript\Negate.cs" />
+    <Compile Include="SpaceScript\Node.cs" />
+    <Compile Include="SpaceScript\Parser\Input.cs" />
+    <Compile Include="SpaceScript\Parser\Literal.cs" />
+    <Compile Include="SpaceScript\Parser\NonTerminal.cs" />
+    <Compile Include="SpaceScript\Parser\Parse.cs" />
+    <Compile Include="SpaceScript\Parser\ParserOf.cs" />
+    <Compile Include="SpaceScript\Parser\Result.cs" />
+    <Compile Include="SpaceScript\Parser\Terminal.cs" />
+    <Compile Include="SpaceScript\Scheduler.cs" />
+    <Compile Include="SpaceScript\Scope.cs" />
+    <Compile Include="SpaceScript\ScriptWalker.cs" />
+    <Compile Include="SpaceScript\State.cs" />
+    <Compile Include="SpaceScript\Types\Block.cs" />
+    <Compile Include="SpaceScript\Types\BlockGroup.cs" />
+    <Compile Include="SpaceScript\Types\BlockList.cs" />
+    <Compile Include="SpaceScript\Types\Bool.cs" />
+    <Compile Include="SpaceScript\Types\Color.cs" />
+    <Compile Include="SpaceScript\Types\Float.cs" />
+    <Compile Include="SpaceScript\Types\IFields.cs" />
+    <Compile Include="SpaceScript\Types\IIndex.cs" />
+    <Compile Include="SpaceScript\Types\IInvoke.cs" />
+    <Compile Include="SpaceScript\Types\NativeFunction.cs" />
+    <Compile Include="SpaceScript\Types\Integer.cs" />
+    <Compile Include="SpaceScript\Types\IType.cs" />
+    <Compile Include="SpaceScript\Types\List.cs" />
+    <Compile Include="SpaceScript\Types\String.cs" />
+    <Compile Include="SpaceScript\Types\UserFunction.cs" />
+    <Compile Include="SpaceScript\Variable.cs" />
+    <Compile Include="SpaceScript\Value.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.  
+       Other similar extension points exist, see Microsoft.Common.targets. 
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
