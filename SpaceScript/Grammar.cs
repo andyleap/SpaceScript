@@ -111,7 +111,7 @@ namespace ScriptLCD.SpaceScript
             select expr;
 
         public static Parser<RValue> Base =
-            from target in Parse.Or<RValue>(Parse.Ref(() => ExprBlock), GroupAccess, Parse.Ref(() => If), Constant, FunctionDec, LambdaDec, Variable, Negate, ParenExpr)
+            from target in Parse.Or<RValue>(Parse.Ref(() => ExprBlock), GroupAccess, Parse.Ref(() => If), Parse.Ref(() => While), Constant, FunctionDec, LambdaDec, Variable, Negate, ParenExpr)
             select target;
 
         public static Parser<Func<RValue, RValue>> IndexAccess =
@@ -217,7 +217,7 @@ namespace ScriptLCD.SpaceScript
             select exp;
 
         public static Parser<RValue> ExpressionList =
-            from exp in Parse.Or(TerminatedExpr, Parse.Ref(() => If), Parse.Ref(() => FunctionDec)).Mult()
+            from exp in Parse.Or(TerminatedExpr, Parse.Ref(() => If), Parse.Ref(() => While), Parse.Ref(() => FunctionDec)).Mult()
             select new ExprBlock(exp);
 
         public static Parser<RValue> ExprBlock =
@@ -237,6 +237,13 @@ namespace ScriptLCD.SpaceScript
             from truebranch in Expr
             from falsebranch in Parse.Literal("else").Then(s => Expr).Optional()
             select new If(cond, truebranch, falsebranch);
-            
+
+        public static Parser<RValue> While =
+            from ws1 in optionalWhitespace
+            from If in Parse.Literal("while")
+
+            from cond in Expr
+            from loop in Expr
+            select new While(cond, loop);
     }
 }

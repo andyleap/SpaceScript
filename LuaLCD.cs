@@ -5,12 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Sandbox.Common;
 using Sandbox.Game.Entities;
-using Sandbox.Common.Components;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.Definitions;
 using Sandbox.Engine;
 using Sandbox.Game;
-using Sandbox.ModAPI;
 using Sandbox.ModAPI.Ingame;
 using Sandbox.ModAPI.Interfaces;
 using VRage.Game;
@@ -19,6 +17,7 @@ using VRage.ObjectBuilders;
 using VRage.ModAPI;
 using VRage;
 using ScriptLCD.SpaceScript.Parser;
+using VRage.Game.ModAPI;
 
 namespace ScriptLCD
 {
@@ -63,12 +62,10 @@ namespace ScriptLCD
 
         public SpaceScript.Scheduler scheduler;
 
-        public double compileTime = 0;
-        public double runTime = 0;
         string ParseError = "";
         public override void UpdateAfterSimulation()
         {
-            IMyGridTerminalSystem ts = MyAPIGateway.TerminalActionsHelper.GetTerminalSystemForGrid(Panel.CubeGrid as Sandbox.ModAPI.IMyCubeGrid);
+            IMyGridTerminalSystem ts = Sandbox.ModAPI.MyAPIGateway.TerminalActionsHelper.GetTerminalSystemForGrid(Panel.CubeGrid as IMyCubeGrid);
             
             //Panel.WritePublicText("", false);
             try {
@@ -77,19 +74,13 @@ namespace ScriptLCD
                 {
                     ParseError = "";
                     Content = Panel.GetPrivateText();
-                    var compiletimer = System.Diagnostics.Stopwatch.StartNew();
                     var program = SpaceScript.Grammar.ExpressionList.TryParse(Content);
-                    compiletimer.Stop();
-                    compileTime = compiletimer.Elapsed.TotalMilliseconds;
                     if (program.WasSuccessful)
                     {
                         compiledProgram = program.Value;
                         scheduler = new SpaceScript.Scheduler(compiledProgram);
-                        var runTimer = System.Diagnostics.Stopwatch.StartNew();
                         scheduler.MainState.TS = ts;
                         scheduler.RunAll();
-                        runTimer.Stop();
-                        runTime = runTimer.Elapsed.TotalMilliseconds;
                     }
                     else
                     {
@@ -106,20 +97,18 @@ namespace ScriptLCD
             Panel.WritePublicText(ParseError, true);
             Panel.WritePublicText("\n", true);
             Panel.WritePublicText(Result, true);
-            Panel.WritePublicText(String.Format("\nCompile {0}ms\nRun {1}ms", compileTime, runTime), true);
+			Panel.ShowTextureOnScreen();
+			Panel.ShowPublicTextOnScreen();
         }
 
         //this is called when  MyEntityUpdateEnum.EACH_10TH_FRAME is used as update interval
         public override void UpdateAfterSimulation10()
         {
-            IMyGridTerminalSystem ts = MyAPIGateway.TerminalActionsHelper.GetTerminalSystemForGrid(Panel.CubeGrid as Sandbox.ModAPI.IMyCubeGrid);
+            IMyGridTerminalSystem ts = Sandbox.ModAPI.MyAPIGateway.TerminalActionsHelper.GetTerminalSystemForGrid(Panel.CubeGrid as IMyCubeGrid);
             try
             {
-                var runTimer = System.Diagnostics.Stopwatch.StartNew();
                 scheduler.MainState.TS = ts;
                 scheduler.RunAll();
-                runTimer.Stop();
-                runTime = runTimer.Elapsed.TotalMilliseconds;
             }
             catch (Exception e)
             {

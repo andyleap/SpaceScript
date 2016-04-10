@@ -38,6 +38,9 @@
     <Reference Include="Sandbox.Common">
       <HintPath>D:\Steam\steamapps\common\SpaceEngineers\..\SpaceEngineers\Bin64\\Sandbox.Common.dll </HintPath>
     </Reference>
+    <Reference Include="SpaceEngineers.Game">
+      <HintPath>D:\Steam\steamapps\common\SpaceEngineers\Bin64\SpaceEngineers.Game.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -108,10 +111,12 @@
     <Compile Include="SpaceScript\Types\Integer.cs" />
     <Compile Include="SpaceScript\Types\IType.cs" />
     <Compile Include="SpaceScript\Types\List.cs" />
+    <Compile Include="SpaceScript\Types\Object.cs" />
     <Compile Include="SpaceScript\Types\String.cs" />
     <Compile Include="SpaceScript\Types\UserFunction.cs" />
     <Compile Include="SpaceScript\Variable.cs" />
     <Compile Include="SpaceScript\Value.cs" />
+    <Compile Include="SpaceScript\While.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.  

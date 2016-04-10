@@ -15,7 +15,12 @@ namespace ScriptLCD.SpaceScript.Types
             this.Value = Value;
         }
 
-        public override string ToString()
+		public Integer(uint Value)
+		{
+			this.Value = (int)Value;
+		}
+
+		public override string ToString()
         {
             return Value.ToString();
         }

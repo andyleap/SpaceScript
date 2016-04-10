@@ -20,7 +20,7 @@ namespace ScriptLCD.SpaceScript
             var mainthread = new Thread(program);
             mainthread.Walker.Scope.SetValue("Tick", new NativeFunction(args =>
             {
-                if(args.Count != 1 && !(args[0] is IInvoke))
+                if(args.Count != 1 || !(args[0] is IInvoke))
                 {
                     throw new Exception("Tick expects a single invokable argument");
                 }
@@ -29,7 +29,7 @@ namespace ScriptLCD.SpaceScript
             }), true);
             mainthread.Walker.Scope.SetValue("Sleep", new NativeFunction(args =>
             {
-                if (args.Count != 1 && !(args[0] is Integer))
+                if (args.Count != 1 || !(args[0] is Integer))
                 {
                     throw new Exception("Sleep expects a single integer argument");
                 }
@@ -40,6 +40,19 @@ namespace ScriptLCD.SpaceScript
                 CurThread.Sleep((args[0] as Integer).Value);
                 return new Bool(true);
             }), true);
+            mainthread.Walker.Scope.SetValue("Thread", new Types.Object()
+            {
+                {"New", new NativeFunction(args =>
+                {
+                    if(args.Count != 1 || !(args[0] is IInvoke))
+                    {
+                        throw new Exception("Thread.New expects an IInvokable");
+                    }
+                    Threads.Add(new Thread(args[0] as IInvoke));
+                    return new Bool(true);
+                }) }
+            }, true);
+
             Threads.Add(mainthread);
         }
 
