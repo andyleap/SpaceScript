@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Sandbox.ModAPI.Ingame;
+using Sandbox.ModAPI.Interfaces;
 
 namespace ScriptLCD.SpaceScript.Types
 {
@@ -42,9 +43,36 @@ namespace ScriptLCD.SpaceScript.Types
             return null;
         }
 
-        public void SetField(Scope scope, State state, string name, IType value)
+		public Integer GetLength(Scope scope, State state)
+		{
+			var blockgroup = state.TS.GetBlockGroupWithName(Name);
+			return new Integer(blockgroup.Blocks.Count);
+		}
+
+		public void SetField(Scope scope, State state, string name, IType value)
         {
-            throw new Exception("Not Implemented yet");
+			var blockgroup = state.TS.GetBlockGroupWithName(Name);
+			foreach (var block in blockgroup.Blocks)
+			{
+				var property = block.GetProperty(name);
+				if (property != null)
+				{
+					switch (property.TypeName)
+					{
+						case "Bool":
+							property.AsBool().SetValue(block, value.Cast<Bool>().Value);
+							continue;
+						case "Single":
+							property.AsFloat().SetValue(block, value.Cast<Float>().Value);
+							continue;
+						case "Color":
+							var c = value.Cast<Color>();
+							property.AsColor().SetValue(block, new VRageMath.Color(c.R, c.G, c.B, c.A));
+							continue;
+					}
+					throw new Exception("Unexpected property type: " + property.TypeName);
+				}
+			}
         }
     }
 }

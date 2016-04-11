@@ -41,7 +41,12 @@ namespace ScriptLCD.SpaceScript
                 CurNode = NodeStack.Pop();
                 return true;
             }
-            var NewEnum = (CurNode.Current as Node)(Scope, State).GetEnumerator();
+			var NewNode = (CurNode.Current as Node)(Scope, State);
+			if(NewNode == null)
+			{
+				return true;
+			}
+            var NewEnum = NewNode.GetEnumerator();
             NodeStack.Push(CurNode);
             Log.WriteLine("Pushing Node");
             CurNode = NewEnum;

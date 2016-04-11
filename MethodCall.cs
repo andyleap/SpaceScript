@@ -29,7 +29,7 @@ namespace ScriptLCD.SpaceScript
                 throw new Exception("Method is not invokable");
             }
             yield return (sc, st) => invokeable.Invoke(sc, st, parameters, Result);
-            Log.WriteLine("Finishing MethodCall");
+			Log.WriteLine("Finishing MethodCall");
         }
     }
 }

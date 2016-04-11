@@ -10,11 +10,13 @@ namespace ScriptLCD.SpaceScript
     {
         public static Parser<string> whitespace =
             from ws in Parse.Set(" \n\t").Mult(1).String()
-            select ws;
+			from comment in Parse.And(Parse.Literal("//"), Parse.NotSet("\n").Mult().String(), Parse.Literal("\n")).Optional()
+			select ws;
 
-        public static Parser<string> optionalWhitespace =
-            from ws in Parse.Set(" \n\t").Mult().String()
-            select ws;
+		public static Parser<string> optionalWhitespace =
+			from ws in Parse.Set(" \n\t").Mult().String()
+			from comment in Parse.And(Parse.Literal("//"), Parse.NotSet("\n").Mult().String(), Parse.Literal("\n")).Optional()
+			select ws;
 
         public static Parser<string> identifier =
             from leadingWhitespace in optionalWhitespace
@@ -50,8 +52,14 @@ namespace ScriptLCD.SpaceScript
             from A in Parse.Set("0-9a-fA-F").Mult(2, 2).String().Optional("FF")
             select new Constant(new Types.Color(Convert.ToByte(R, 16), Convert.ToByte(G, 16), Convert.ToByte(B, 16), Convert.ToByte(A, 16)));
 
+		public static Parser<RValue> ConstantString =
+			from openquote in Parse.Literal("\"")
+			from content in Parse.Or(Parse.NotSet("\\\""), Parse.Literal("\\\"").Select(s => '"')).Mult().String()
+			from closequote in Parse.Literal("\"")
+			select new Constant(new Types.String(content));
+
         public static Parser<RValue> Constant =
-            Parse.Or(ConstantBool, ConstantFloat, ConstantInt, ConstantColor);
+            Parse.Or(ConstantBool, ConstantFloat, ConstantInt, ConstantColor, ConstantString);
 
         public static Parser<RValue> Variable =
             from name in identifier
@@ -111,7 +119,7 @@ namespace ScriptLCD.SpaceScript
             select expr;
 
         public static Parser<RValue> Base =
-            from target in Parse.Or<RValue>(Parse.Ref(() => ExprBlock), GroupAccess, Parse.Ref(() => If), Parse.Ref(() => While), Constant, FunctionDec, LambdaDec, Variable, Negate, ParenExpr)
+            from target in Parse.Or<RValue>(Parse.Ref(() => ExprBlock), GroupAccess, Parse.Ref(() => If), Parse.Ref(() => While), Parse.Ref(() => ForEach), Constant, FunctionDec, LambdaDec, Variable, Negate, ParenExpr)
             select target;
 
         public static Parser<Func<RValue, RValue>> IndexAccess =
@@ -217,7 +225,7 @@ namespace ScriptLCD.SpaceScript
             select exp;
 
         public static Parser<RValue> ExpressionList =
-            from exp in Parse.Or(TerminatedExpr, Parse.Ref(() => If), Parse.Ref(() => While), Parse.Ref(() => FunctionDec)).Mult()
+            from exp in Parse.Or(TerminatedExpr, Parse.Ref(() => If), Parse.Ref(() => While), Parse.Ref(() => ForEach), Parse.Ref(() => FunctionDec)).Mult()
             select new ExprBlock(exp);
 
         public static Parser<RValue> ExprBlock =
@@ -241,9 +249,18 @@ namespace ScriptLCD.SpaceScript
         public static Parser<RValue> While =
             from ws1 in optionalWhitespace
             from If in Parse.Literal("while")
-
             from cond in Expr
             from loop in Expr
             select new While(cond, loop);
-    }
+
+		public static Parser<RValue> ForEach =
+			from ws1 in optionalWhitespace
+			from ForEach in Parse.Literal("foreach")
+			from item in Variable
+			from In in Parse.Literal("in")
+			from list in Expr
+			from loop in Expr
+			select new ForEach(item as Variable, list, loop);
+
+	}
 }

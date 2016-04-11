@@ -18,10 +18,12 @@ namespace ScriptLCD.SpaceScript
         public IEnumerable<Node> Resolve(Scope scope, State state, Action<IType> Result)
         {
             IType val = null;
+			scope.Push();
             foreach(var expr in expressions)
             {
                 yield return (sc, st) => expr.Resolve(sc, st, r => { val = r; });
             }
+			scope.Pop();
             Result(val);
         }
     }

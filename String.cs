@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ScriptLCD.SpaceScript.Types
 {
-    class String : IType
+    class String : IType, IFields
     {
         public string Value;
 
@@ -34,5 +34,30 @@ namespace ScriptLCD.SpaceScript.Types
             }
             return base.Equals(obj);
         }
-    }
+
+		public IType GetField(Scope scope, State state, string name)
+		{
+			if (name == "Contains")
+			{
+				return new NativeFunction(args =>
+				{
+					if (args.Count != 1 || !(args[0] is String))
+					{
+						throw new Exception("String.Contains expects a single string argument");
+					}
+					if (Value.Contains((args[0] as String).Value))
+					{
+						return new Bool(true);
+					}
+					return new Bool(false);
+				});
+			}
+			throw new Exception(string.Format("Field {0} does not exist on type String", name));
+		}
+
+		public void SetField(Scope scope, State state, string name, IType value)
+		{
+			throw new Exception(string.Format("Field {0} does not exist on type String", name));
+		}
+	}
 }

@@ -18,7 +18,7 @@ namespace ScriptLCD.SpaceScript
 
         public IEnumerable<Node> Resolve(Scope scope, State state, Action<IType> Result)
         {
-            func.Closure = scope.DataStack;
+            func.Closure = new Stack<ScopeData>(scope.DataStack);
             Result(func);
             yield break;
         }

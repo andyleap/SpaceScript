@@ -26,25 +26,25 @@ namespace ScriptLCD.SpaceScript.Types
             {
                 yield return (sc, st) => arg.Resolve(sc, st, r => { Parameters.Add(r); });
             }
-            scope.PushClosure(Closure);
-            scope.Push();
-            try
-            {
-                for(int l1 = 0; l1 < Arguments.Count; l1++)
-                {
-                    if(l1 >= Parameters.Count)
-                    {
-                        throw new Exception("Not enough arguments to function");
-                    }
-                    scope.SetValue(Arguments[l1], Parameters[l1], true);
-                }
-                yield return (sc, st) => Body.Resolve(sc, st, Result);
-            }
-            finally
-            {
-                scope.Pop();
-                scope.PopClosure();
-            }
+            scope.PushClosure(new Stack<ScopeData>(Closure));
+			scope.Push();
+			try
+			{
+				for (int l1 = 0; l1 < Arguments.Count; l1++)
+				{
+					if (l1 >= Parameters.Count)
+					{
+						throw new Exception("Not enough arguments to function");
+					}
+					scope.SetValue(Arguments[l1], Parameters[l1], true);
+				}
+				yield return (sc, st) => Body.Resolve(sc, st, Result);
+			}
+			finally
+			{
+				scope.Pop();
+				scope.PopClosure();
+			}
         }
     }
 }

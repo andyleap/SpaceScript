@@ -68,11 +68,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LuaLCD.cs" />
+    <Compile Include="ScriptLCD.cs" />
     <Compile Include="ModDebugger.cs" />
     <Compile Include="SpaceScript\Closure.cs" />
     <Compile Include="SpaceScript\CompOp.cs" />
     <Compile Include="SpaceScript\Constant.cs" />
+    <Compile Include="SpaceScript\ForEach.cs" />
     <Compile Include="SpaceScript\If.cs" />
     <Compile Include="SpaceScript\IndexAccess.cs" />
     <Compile Include="SpaceScript\Log.cs" />
