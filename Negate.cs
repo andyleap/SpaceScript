@@ -21,14 +21,14 @@ namespace ScriptLCD.SpaceScript
             yield return (sc, st) => expr.Resolve(sc, st, r => { val = r; });
             if(val is Integer)
             {
-                (val as Integer).Value = -(val as Integer).Value;
+                val = new Integer(-(val as Integer).Value);
                 Result(val);
                 yield break;
             }
             if (val is Float)
             {
-                (val as Float).Value = -(val as Float).Value;
-                Result(val);
+				val = new Float(-(val as Float).Value);
+				Result(val);
                 yield break;
             }
             throw new Exception("Cannot negate value of type " + val.GetType().Name);

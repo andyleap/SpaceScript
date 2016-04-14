@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ScriptLCD.SpaceScript.Types
 {
-    class Color : IType
+    class Color : IType, IFields
     {
         public byte R;
         public byte G;
@@ -35,5 +35,52 @@ namespace ScriptLCD.SpaceScript.Types
             }
             return base.Equals(obj);
         }
-    }
+
+		public IType GetField(Scope scope, State state, string name)
+		{
+			if(name == "R")
+			{
+				return new Integer(R);
+			}
+			if (name == "G")
+			{
+				return new Integer(G);
+			}
+			if (name == "B")
+			{
+				return new Integer(B);
+			}
+			if (name == "A")
+			{
+				return new Integer(A);
+			}
+			throw new Exception("type Color has no field '" + name + "'");
+		}
+
+		public void SetField(Scope scope, State state, string name, IType value)
+		{
+			if(name == "R")
+			{
+				R = (byte)value.Cast<Integer>().Value;
+				return;
+			}
+			if (name == "G")
+			{
+				G = (byte)value.Cast<Integer>().Value;
+				return;
+			}
+			if (name == "B")
+			{
+				B = (byte)value.Cast<Integer>().Value;
+				return;
+			}
+			if (name == "A")
+			{
+				A = (byte)value.Cast<Integer>().Value;
+				return;
+			}
+
+			throw new Exception("type Color has no field '" + name + "'");
+		}
+	}
 }

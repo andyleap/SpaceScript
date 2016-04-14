@@ -112,14 +112,19 @@ namespace ScriptLCD.SpaceScript
             from Base in Parse.Ref(() => Base)
             select new Negate(Base);
 
-        public static Parser<RValue> ParenExpr =
+		public static Parser<RValue> BoolNegate =
+			from negate in Parse.Literal("!")
+			from Base in Parse.Ref(() => Base)
+			select new BoolNegate(Base);
+
+		public static Parser<RValue> ParenExpr =
             from openParen in Parse.Literal("(")
             from expr in Parse.Ref(() => Expr)
             from closeParen in Parse.Literal(")")
             select expr;
 
         public static Parser<RValue> Base =
-            from target in Parse.Or<RValue>(Parse.Ref(() => ExprBlock), GroupAccess, Parse.Ref(() => If), Parse.Ref(() => While), Parse.Ref(() => ForEach), Constant, FunctionDec, LambdaDec, Variable, Negate, ParenExpr)
+            from target in Parse.Or<RValue>(Parse.Ref(() => ExprBlock), GroupAccess, Parse.Ref(() => If), Parse.Ref(() => While), Parse.Ref(() => ForEach), Constant, FunctionDec, LambdaDec, Variable, Negate, BoolNegate, ParenExpr)
             select target;
 
         public static Parser<Func<RValue, RValue>> IndexAccess =
@@ -166,7 +171,7 @@ namespace ScriptLCD.SpaceScript
 
         public static Parser<Func<RValue, RValue>> FactorRest =
             from ws1 in optionalWhitespace
-            from op in Parse.Set("-+")
+            from op in Parse.Set("/*")
             from ws2 in optionalWhitespace
             from operand in Operand
             select (Func<RValue, RValue>)(t => new MathOp(t, op, operand));
@@ -180,7 +185,7 @@ namespace ScriptLCD.SpaceScript
 
         public static Parser<Func<RValue, RValue>> TermRest =
             from ws1 in optionalWhitespace
-            from op in Parse.Set("*/")
+            from op in Parse.Set("-+")
             from ws2 in optionalWhitespace
             from factor in Factor
             select (Func<RValue, RValue>)(t => new MathOp(t, op, factor));
@@ -192,21 +197,35 @@ namespace ScriptLCD.SpaceScript
             from ws2 in optionalWhitespace
             select Expression.Apply(factor, termRest);
 
-        public static Parser<Func<RValue, RValue>> ExprRest =
+        public static Parser<Func<RValue, RValue>> PreExprRest =
             from ws1 in optionalWhitespace
-            from op in Parse.Or(Parse.Literal("=="), Parse.Literal("!="))
+            from op in Parse.Or(Parse.Literal("=="), Parse.Literal("!="), Parse.Literal(">="), Parse.Literal("<="), Parse.Literal(">"), Parse.Literal("<"))
             from ws2 in optionalWhitespace
             from term in Term
             select (Func<RValue, RValue>)(t => new CompOp(t, op, term));
 
-        public static Parser<RValue> Expr =
+        public static Parser<RValue> PreExpr =
             from ws1 in optionalWhitespace
             from term in Term
-            from exprRest in ExprRest.Mult()
+            from exprRest in PreExprRest.Mult()
             from ws2 in optionalWhitespace
             select Expression.Apply(term, exprRest);
 
-        public static Parser<RValue> Parameter =
+		public static Parser<Func<RValue, RValue>> ExprRest =
+			from ws1 in optionalWhitespace
+			from op in Parse.Or(Parse.Literal("&&"), Parse.Literal("||"))
+			from ws2 in optionalWhitespace
+			from term in PreExpr
+			select (Func<RValue, RValue>)(t => new BoolOp(t, op, term));
+
+		public static Parser<RValue> Expr =
+			from ws1 in optionalWhitespace
+			from term in PreExpr
+			from exprRest in ExprRest.Mult()
+			from ws2 in optionalWhitespace
+			select Expression.Apply(term, exprRest);
+
+		public static Parser<RValue> Parameter =
             from exp in Expr
             from ws1 in Parse.Set(" ").Mult()
             from comma in Parse.Literal(",")

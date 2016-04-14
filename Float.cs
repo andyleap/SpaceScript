@@ -82,5 +82,22 @@ namespace ScriptLCD.SpaceScript.Types
             }
             return base.Cast<T>();
         }
-    }
+
+		public override int Compare(IType i2)
+		{
+			Float other = i2.Cast<Float>();
+			if (Value > other.Value)
+			{
+				return 1;
+			}
+			else if (Value < other.Value)
+			{
+				return -1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+	}
 }

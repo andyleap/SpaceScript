@@ -7,13 +7,13 @@ using ScriptLCD.SpaceScript.Types;
 
 namespace ScriptLCD.SpaceScript
 {
-    class CompOp : Expression, RValue
+    class BoolOp : Expression, RValue
     {
         RValue v1;
         string op;
         RValue v2;
 
-        public CompOp(RValue v1, string op, RValue v2)
+        public BoolOp(RValue v1, string op, RValue v2)
         {
             this.v1 = v1;
             this.op = op;
@@ -23,28 +23,28 @@ namespace ScriptLCD.SpaceScript
         {
             IType val1 = null;
             IType val2 = null;
-            yield return (sc, st) => v1.Resolve(sc, st, r => { val1 = r; });
+			bool bool1 = false;
+			bool bool2 = false;
+			yield return (sc, st) => v1.Resolve(sc, st, r => { val1 = r; });
+			if(!(val1 is Bool))
+			{
+				throw new Exception(op + " only valid on boolean types");
+			}
+			bool1 = (val1 as Bool).Value;
             yield return (sc, st) => v2.Resolve(sc, st, r => { val2 = r; });
-            switch (op)
+			if (!(val2 is Bool))
+			{
+				throw new Exception(op + " only valid on boolean types");
+			}
+			bool2 = (val2 as Bool).Value;
+			switch (op)
             {
-                case "==":
-                    Result(new Bool(val1.Equals(val2)));
+                case "&&":
+                    Result(new Bool(bool1 && bool2));
                     break;
-                case "!=":
-                    Result(new Bool(!val1.Equals(val2)));
+                case "||":
+                    Result(new Bool(bool1 || bool2));
                     break;
-				case ">":
-					Result(new Bool(val1.Compare(val2) == 1));
-					break;
-				case "<":
-					Result(new Bool(val1.Compare(val2) == -1));
-					break;
-				case ">=":
-					Result(new Bool(val1.Compare(val2) != -1));
-					break;
-				case "<=":
-					Result(new Bool(val1.Compare(val2) != 1));
-					break;
 			}
         }
     }

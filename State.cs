@@ -10,6 +10,7 @@ namespace ScriptLCD.SpaceScript
     public class State
     {
         public IMyGridTerminalSystem TS;
-
+		public List<Action> EventHandlerRemovers = new List<Action>();
+		public Scheduler scheduler;
     }
 }

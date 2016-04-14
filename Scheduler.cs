@@ -17,7 +17,7 @@ namespace ScriptLCD.SpaceScript
 
 		const int MaxExecution = 10000;
 		const int ShortPoolPerTick = 500;
-		const int ReplenishPerTick = 10;
+		const int ReplenishPerTick = 100;
 		const int MaxShortPool = 2000;
 
 		public int ExecutionPool = 0;
@@ -26,7 +26,8 @@ namespace ScriptLCD.SpaceScript
 
         public Scheduler(RValue program)
         {
-            var mainthread = new Thread(program);
+			MainState.scheduler = this;
+			var mainthread = new Thread(program);
             mainthread.Walker.Scope.SetValue("Sleep", new NativeFunction(args =>
             {
                 if (args.Count != 1 || !(args[0] is Integer))
@@ -44,11 +45,11 @@ namespace ScriptLCD.SpaceScript
             {
                 {"New", new NativeFunction(args =>
 					{
-						if(args.Count != 1 || !(args[0] is IInvoke))
+						if(args.Count < 1 || !(args[0] is IInvoke))
 						{
 							throw new Exception("Thread.New expects an IInvokable");
 						}
-						Threads.Add(new Thread(args[0] as IInvoke));
+						Threads.Add(new Thread(args[0] as IInvoke, args.Skip(1).ToList()));
 						return new Bool(true);
 					})}
             }, true);
@@ -88,6 +89,20 @@ namespace ScriptLCD.SpaceScript
 						var block = MainState.TS.GetBlockWithName((args[0] as Types.String).Value);
 						return new Block(block);
 					})}
+			}, true);
+
+
+
+			mainthread.Walker.Scope.SetValue("Math", new Types.Object()
+			{
+				{"Sin", new NativeFunction(args =>
+				{
+					if(args.Count != 1)
+					{
+						throw new Exception("Math.Sin expects a single argument");
+					}
+					return new Float((float)Math.Sin(args[0].Cast<Float>().Value));
+				}) }
 			}, true);
 
 			Threads.Add(mainthread);
@@ -160,7 +175,11 @@ namespace ScriptLCD.SpaceScript
 			return usedTicks;
         }
 
-
+		public void Shutdown()
+		{
+			Threads.Clear();
+			MainState.EventHandlerRemovers.ForEach(a => a());
+		}
     }
 
     public class Thread
@@ -170,12 +189,12 @@ namespace ScriptLCD.SpaceScript
             IInvoke method;
 			List<RValue> args = new List<RValue>();
 
-            public ThreadWrapper(IInvoke method, List<RValue> args = null)
+            public ThreadWrapper(IInvoke method, List<IType> args = null)
             {
                 this.method = method;
 				if(args != null)
 				{
-					this.args = args;
+					this.args = args.Select(a => new Constant(a)).ToList<RValue>();
 				}
             }
 
@@ -190,7 +209,11 @@ namespace ScriptLCD.SpaceScript
         DateTime SleepUntil;
         public bool Running = true;
 
-        public Thread(IInvoke Method) : this(new ThreadWrapper(Method))
+		public Thread(IInvoke Method, List<IType> args) : this(new ThreadWrapper(Method, args))
+		{
+		}
+
+		public Thread(IInvoke Method) : this(new ThreadWrapper(Method))
         {
         }
 

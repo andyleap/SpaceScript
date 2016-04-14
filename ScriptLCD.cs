@@ -37,7 +37,11 @@ namespace ScriptLCD
         //if you suscribed to events, please always unsuscribe them in close method 
         public override void Close()
         {
-        }
+			if (scheduler != null)
+			{
+				scheduler.Shutdown();
+			}
+		}
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
@@ -46,7 +50,7 @@ namespace ScriptLCD
 			//here you can add new update interval, in this case we would like to update each 100TH frame
 			//you can also update each frame, each 10Th frame 
 			// you can combine update intervals, so you can update every frame , every 10TH frame and every 100TH frame
-			if (Panel.BlockDefinition.SubtypeName == "LargeScriptPanel" || Panel.BlockDefinition.SubtypeName == "SmallScriptPanel")
+			if ((Panel.BlockDefinition.SubtypeName == "LargeScriptPanel" || Panel.BlockDefinition.SubtypeName == "SmallScriptPanel") && (MyAPIGateway.Multiplayer == null || MyAPIGateway.Multiplayer.IsServer))
 			{
 				ScriptPanel = true;
 				Entity.NeedsUpdate |= MyEntityUpdateEnum.EACH_FRAME;
@@ -83,6 +87,10 @@ namespace ScriptLCD
 
                 if (Content != Panel.GetPrivateText())
                 {
+					if (scheduler != null)
+					{
+						scheduler.Shutdown();
+					}
 					scheduler = null;
 					Messages.Clear();
 					NeedRedraw = true;

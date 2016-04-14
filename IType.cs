@@ -40,5 +40,10 @@ namespace ScriptLCD.SpaceScript.Types
             }
             throw new Exception(string.Format("Cannot cast variable of type {0} to {1}", this.GetType().Name, typeof(T).Name));
         }
+
+		public virtual int Compare(IType i2)
+		{
+			throw new Exception(string.Format("Comparison not supported between {0} and {1}", this.GetType().Name, i2.GetType().Name));
+		}
     }
 }
